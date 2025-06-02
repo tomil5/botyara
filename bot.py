@@ -6,6 +6,7 @@ import time
 import os
 import json
 from dotenv import load_dotenv
+import random
 
 # загрузка токена из енв
 load_dotenv()
@@ -19,10 +20,10 @@ USERS_FILE = "users.json"
 # 🌍 Ссылки на Avito
 URLS = {
     "Кировская область": "https://www.avito.ru/kirovskaya_oblast/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
-    "Нижегородская область": "https://www.avito.ru/nizhegorodskaya_oblast/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
-    "Татарстан": "https://www.avito.ru/tatarstan/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
-    "Марий Эл": "https://www.avito.ru/mariy_el/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
-    "Удмуртия": "https://www.avito.ru/udmurtiya/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    #"Нижегородская область": "https://www.avito.ru/nizhegorodskaya_oblast/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    #"Татарстан": "https://www.avito.ru/tatarstan/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    #"Марий Эл": "https://www.avito.ru/mariy_el/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    #"Удмуртия": "https://www.avito.ru/udmurtiya/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
 }
 
 
@@ -57,11 +58,17 @@ def save_users():
 
 allowed_users = load_users()
 
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.3 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:115.0) Gecko/20100101 Firefox/115.0",
+]
 
 # 🔍 Парсинг Avito
 def fetch_ads():
     ads = []
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": random.choice(USER_AGENTS)}
 
     for region, url in URLS.items():
         try:
@@ -106,6 +113,7 @@ def check_and_send_new_ads():
         if ad_id not in seen_ads:
             seen_ads.add(ad_id)
             new_ads.append((region, title, price, link))
+            print(f"[DEBUG] Добавлен ID: {ad_id}")
 
     if new_ads:
         save_seen_ads()
@@ -118,7 +126,6 @@ def check_and_send_new_ads():
                 bot.send_message(user_id, msg, parse_mode="Markdown")
             except Exception as e:
                 print(f"❗ Не удалось отправить сообщение {user_id}: {e}")
-    print(f"[DEBUG] Добавлен ID: {ad_id}")
 
 
 # 🧾 Команды бота

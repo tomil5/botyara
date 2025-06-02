@@ -18,7 +18,11 @@ USERS_FILE = "users.json"
 
 # 🌍 Ссылки на Avito
 URLS = {
-    "Кировская область": "https://www.avito.ru/kirovskaya_oblast/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9"
+    "Кировская область": "https://www.avito.ru/kirovskaya_oblast/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    "Нижегородская область": "https://www.avito.ru/nizhegorodskaya_oblast/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    "Татарстан": "https://www.avito.ru/tatarstan/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    "Марий Эл": "https://www.avito.ru/mariy_el/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
+    "Удмуртия": "https://www.avito.ru/udmurtiya/avtomobili/do-200000-rubley-ASgCAgECAUXGmgwWeyJmcm9tIjowLCJ0byI6MjAwMDAwfQ?f=ASgBAgECAUTutg3qtygBRcaaDBZ7ImZyb20iOjAsInRvIjoyMDAwMDB9",
 }
 
 
@@ -163,7 +167,7 @@ def current_ads(message):
         bot.send_message(message.chat.id, "Объявлений не найдено.")
         return
     for region, title, price, link, ad_id in ads[:1000]:  # Ограничим до 10
-        msg = f"🚗 *{region}*\n{title}\n💰 {price}\n🔗 [Смотреть объявление]({link})"
+        msg = f"🚗 *{region}*\n {title} \n💰 {price}\n🔗 [Смотреть объявление]({link})"
         bot.send_message(message.chat.id, msg, parse_mode="Markdown")
         time.sleep(1)  # Пауза, чтобы не попасть под лимиты Telegram
 

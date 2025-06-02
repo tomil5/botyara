@@ -5,12 +5,14 @@ import threading
 import time
 import os
 import json
+from dotenv import load_dotenv
 
-# 🔐 Настройки
-TOKEN = '8172278638:AAF9TSTDai55zMB0Wjn7jwNzXXn3ZIYJrFc'
+# загрузка токена из енв
+load_dotenv()
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
 
-# 📁 Файлы хранения
+# 📁 Файлы хранения меняю на бд??
 SEEN_FILE = "seen_ads.json"
 USERS_FILE = "users.json"
 
@@ -142,7 +144,7 @@ def current_ads(message):
     if not ads:
         bot.send_message(message.chat.id, "Объявлений не найдено.")
         return
-    for region, title, price, link, ad_id in ads[:10]:  # Ограничим до 10
+    for region, title, price, link, ad_id in ads[:1000]:  # Ограничим до 10
         msg = f"🚗 *{region}*\n{title}\n💰 {price}\n🔗 [Смотреть объявление]({link})"
         bot.send_message(message.chat.id, msg, parse_mode="Markdown")
         time.sleep(1)  # Пауза, чтобы не попасть под лимиты Telegram

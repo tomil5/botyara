@@ -68,13 +68,16 @@ def fetch_ads():
                     continue
 
                 href = link_tag['href']
-                title = link_tag.get_text(strip=True)
                 full_link = "https://www.avito.ru" + href
 
+                # Получаем ID из ссылки
+                ad_id = href.split('_')[-1].split('?')[0]  # Надёжный способ вытащить ID
+
+                title = link_tag.get_text(strip=True)
                 price_tag = item.find(attrs={"data-marker": "item-price"})
                 price = price_tag.get_text(strip=True) if price_tag else "Цена не указана"
 
-                ads.append((region, title, price, full_link))
+                ads.append((region, title, price, full_link, ad_id))
 
         except Exception as e:
             print(f"❌ Ошибка при обработке {region}: {e}")
@@ -85,21 +88,23 @@ def check_and_send_new_ads():
     ads = fetch_ads()
     new_ads = []
 
-    for region, title, price, link in ads:
-        if link not in seen_ads:
-            seen_ads.add(link)
+    for region, title, price, link, ad_id in ads:
+        if ad_id not in seen_ads:
+            seen_ads.add(ad_id)
             new_ads.append((region, title, price, link))
 
     if new_ads:
         save_seen_ads()
+        print(f"✅ Найдено новых объявлений: {len(new_ads)}")
 
     for region, title, price, link in new_ads:
-        msg = f"🚗 *{region}*\n{title}\n💰 {price}\n🔗 [Смотреть объявление]({link})"
+        msg = f"🚗 *{region}*\n*{title}*\n💰 {price}\n🔗 [Смотреть объявление]({link})"
         for user_id in allowed_users:
             try:
                 bot.send_message(user_id, msg, parse_mode="Markdown")
             except Exception as e:
                 print(f"❗ Не удалось отправить сообщение {user_id}: {e}")
+    print(f"[DEBUG] Добавлен ID: {ad_id}")
 
 # 🧾 Команды бота
 @bot.message_handler(commands=['start'])
@@ -137,7 +142,7 @@ def current_ads(message):
     if not ads:
         bot.send_message(message.chat.id, "Объявлений не найдено.")
         return
-    for region, title, price, link in ads[:10]:  # Ограничим до 10
+    for region, title, price, link, ad_id in ads[:10]:  # Ограничим до 10
         msg = f"🚗 *{region}*\n{title}\n💰 {price}\n🔗 [Смотреть объявление]({link})"
         bot.send_message(message.chat.id, msg, parse_mode="Markdown")
         time.sleep(1)  # Пауза, чтобы не попасть под лимиты Telegram
